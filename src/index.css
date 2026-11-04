@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-eco-green: #2E7D32;
+  --color-eco-light: #81C784;
+  --color-eco-dark: #1B5E20;
+  --color-eco-bg: #F1F8E9;
+}
+
+body {
+  background-color: var(--color-eco-bg);
+  color: #1f2937; /* gray-800 */
+}

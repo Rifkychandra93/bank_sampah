@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navbar } from '../../components/masyarakat/navbar';
 import { UserQrModal } from '../../components/masyarakat/userQrModal';
 import { WasteCalculator } from '../../components/masyarakat/wasteCalculator';
-import { QrCode, Wallet, TrendingUp, Award, MapPin, ArrowUpRight, Clock } from 'lucide-react';
+import { QrCode, Wallet, TrendingUp, Award, MapPin, Clock } from 'lucide-react';
 
 export default function HomeMasyarakat() {
   const userId = 'USER-123456';
@@ -72,9 +72,7 @@ export default function HomeMasyarakat() {
               </p>
               <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-slate-100">
                 <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                  <TrendingUp size={14} /> +Rp 38.000 bulan ini
                 </span>
-                <span className="text-slate-400 font-mono">Bebas Biaya</span>
               </div>
             </div>
           </div>
@@ -121,10 +119,6 @@ export default function HomeMasyarakat() {
             <p className="text-xs text-slate-300 mt-1">
               ID: {userId} • Siap ditunjukkan ke petugas agen untuk proses timbang kilat.
             </p>
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-emerald-400 font-bold">
-              <span>Buka Kartu Barcode</span>
-              <ArrowUpRight size={15} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
           </div>
         </div>
 
@@ -225,7 +219,6 @@ export default function HomeMasyarakat() {
 
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-emerald-700 font-bold">
               <span>Jadwal Setor Fleksibel</span>
-              <span className="text-slate-400 font-normal text-[11px]">Pos Resmi RT/RW</span>
             </div>
           </div>
         </div>

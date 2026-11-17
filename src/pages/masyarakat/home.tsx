@@ -6,11 +6,15 @@ import { QrCode, Wallet, TrendingUp, Award, MapPin, Clock } from 'lucide-react';
 
 export default function HomeMasyarakat() {
   const userId = 'USER-123456';
-  const userName = 'Rifky Chandra';
+  const [userName, setUserName] = useState<string>('Rifky Chandra');
   const [balance, setBalance] = useState<number>(0);
   const [isQrModalOpen, setIsQrModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    const savedName = localStorage.getItem('ecoBank_userName');
+    if (savedName) {
+      setUserName(savedName);
+    }
     const savedBalance = localStorage.getItem('ecoBank_userBalance');
     if (savedBalance) {
       setBalance(Number(savedBalance));

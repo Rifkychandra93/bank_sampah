@@ -3,6 +3,7 @@ import LandingPage from './pages/landingPage';
 import Login from './pages/auth/login';
 import HomeMasyarakat from './pages/masyarakat/home';
 import DashboardAgen from './pages/agen/dashboard';
+import RiwayatAgen from './pages/agen/riwayat';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/masyarakat" element={<HomeMasyarakat />} />
         <Route path="/agen" element={<DashboardAgen />} />
+        <Route path="/agen/riwayat" element={<RiwayatAgen />} />
       </Routes>
     </BrowserRouter>
   );

@@ -20,7 +20,7 @@ export function ScannerSection({ onScanSuccess }: ScannerSectionProps) {
         <Scanner 
           onScan={handleScan} 
           onError={(error) => console.log(error?.message)}
-          components={{ audio: true, torch: true, zoom: true }}
+          components={{ torch: true, zoom: true }}
         />
       </div>
     </div>

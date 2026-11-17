@@ -34,12 +34,19 @@ export function TransactionForm({ scannedCode, onCancel }: TransactionFormProps)
     localStorage.setItem('ecoBank_userBalance', (currentBalance + reward).toString());
 
     const history = JSON.parse(localStorage.getItem('ecoBank_history') || '[]');
-    history.push({
-      id: Date.now(),
+    const transactionId = `TRX-${Date.now().toString().slice(-6)}`;
+    const detectedUserName = scannedCode.includes('123456') ? 'Rifky Chandra' : 'Nasabah EcoBank';
+
+    history.unshift({
+      id: transactionId,
+      userId: scannedCode || 'USER-123456',
+      userName: detectedUserName,
       type: wasteType,
+      pricePerKg: prices[wasteType],
       weight: numWeight,
       reward: reward,
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
+      status: 'Selesai'
     });
     localStorage.setItem('ecoBank_history', JSON.stringify(history));
 

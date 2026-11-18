@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, AlertCircle, ArrowRight, User, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, ArrowRight, User, ShieldCheck, Crown } from 'lucide-react';
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -22,6 +22,8 @@ export function LoginForm() {
         navigate('/agen');
       } else if (cleanEmail === 'masyarakat@gmail.com' && password === 'password') {
         navigate('/masyarakat');
+      } else if (cleanEmail === 'superadmin@gmail.com' && password === 'password') {
+        navigate('/superadmin');
       } else {
         setIsLoading(false);
         setError('Email atau kata sandi tidak valid. Gunakan akun demo di bawah.');
@@ -125,7 +127,7 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => handleQuickDemo('masyarakat@gmail.com')}
-          className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
+          className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
         >
           <User size={14} className="text-emerald-600" />
           <span>Masyarakat</span>
@@ -134,10 +136,19 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => handleQuickDemo('agen@gmail.com')}
-          className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
+          className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
         >
           <ShieldCheck size={14} className="text-emerald-600" />
           <span>Agen Pos</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleQuickDemo('superadmin@gmail.com')}
+          className="col-span-2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-800 text-xs font-semibold transition-colors cursor-pointer"
+        >
+          <Crown size={14} className="text-emerald-600" />
+          <span>Superadmin Pusat</span>
         </button>
       </div>
     </div>

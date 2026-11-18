@@ -4,18 +4,15 @@ import { Sidebar } from '../../components/agen/sidebar';
 import { ThemeToggle } from '../../context/ThemeContext';
 import {
   Search,
-  Calendar,
   Download,
   Plus,
-  CheckCircle2,
   Printer,
   X,
   Scale,
   Banknote,
   ReceiptText,
   Clock,
-  Menu,
-  Sparkles
+  Menu
 } from 'lucide-react';
 
 export interface TransactionRecord {

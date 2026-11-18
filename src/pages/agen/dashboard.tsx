@@ -3,7 +3,7 @@ import { Sidebar } from '../../components/agen/sidebar';
 import { ScannerSection } from '../../components/agen/scannerSection';
 import { TransactionForm } from '../../components/agen/transactionForm';
 import { ThemeToggle } from '../../context/ThemeContext';
-import { Menu, ScanLine, Sparkles } from 'lucide-react';
+import { Menu, ScanLine } from 'lucide-react';
 
 export default function DashboardAgen() {
   const [scannedCode, setScannedCode] = useState<string | null>(null);

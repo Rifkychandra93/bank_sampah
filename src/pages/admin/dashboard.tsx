@@ -7,14 +7,8 @@ import {
   Building2,
   Scale,
   Banknote,
-  CheckCircle2,
-  ShieldCheck,
-  TrendingUp,
   Search,
-  Filter,
   LogOut,
-  MapPin,
-  Clock,
   Tag
 } from 'lucide-react';
 

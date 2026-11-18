@@ -8,28 +8,12 @@ import LokasiSetorMasyarakat from './pages/masyarakat/lokasi';
 import RiwayatSetoranMasyarakat from './pages/masyarakat/riwayat';
 import DashboardAgen from './pages/agen/dashboard';
 import RiwayatAgen from './pages/agen/riwayat';
-import DashboardSuperadmin from './pages/superadmin/dashboard';
-import ManageAgen from './pages/superadmin/manageAgen';
-import ManageMasyarakat from './pages/superadmin/manageMasyarakat';
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/masyarakat" element={<HomeMasyarakat />} />
-        <Route path="/masyarakat/profile" element={<ProfileMasyarakat />} />
-        <Route path="/agen" element={<DashboardAgen />} />
-        <Route path="/agen/riwayat" element={<RiwayatAgen />} />
-        <Route path="/superadmin" element={<DashboardSuperadmin />} />
-        <Route path="/superadmin/agen" element={<ManageAgen />} />
-        <Route path="/superadmin/masyarakat" element={<ManageMasyarakat />} />
-      </Routes>
-    </BrowserRouter>
 import HargaSampahAgen from './pages/agen/harga';
 import ProfileAgen from './pages/agen/profile';
 import DashboardAdmin from './pages/admin/dashboard';
+import DashboardSuperadmin from './pages/superadmin/dashboard';
+import ManageAgen from './pages/superadmin/manageAgen';
+import ManageMasyarakat from './pages/superadmin/manageMasyarakat';
 
 function App() {
   return (
@@ -47,6 +31,9 @@ function App() {
           <Route path="/agen/harga" element={<HargaSampahAgen />} />
           <Route path="/agen/profile" element={<ProfileAgen />} />
           <Route path="/admin" element={<DashboardAdmin />} />
+          <Route path="/superadmin" element={<DashboardSuperadmin />} />
+          <Route path="/superadmin/agen" element={<ManageAgen />} />
+          <Route path="/superadmin/masyarakat" element={<ManageMasyarakat />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

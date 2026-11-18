@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Sidebar } from '../../components/agen/sidebar';
 import { ThemeToggle } from '../../context/ThemeContext';
 import {
@@ -13,9 +12,6 @@ import {
   CheckCircle2,
   Lock,
   Bell,
-  Scale,
-  Award,
-  Calendar,
   Menu,
   X
 } from 'lucide-react';
@@ -25,23 +21,23 @@ export default function ProfileAgen() {
 
   // Agent identity states
   const [officerName, setOfficerName] = useState('Bambang Sutrisno');
-  const [agentId, setAgentId] = useState('AG-082');
+  const [agentId] = useState('AG-082');
   const [phone, setPhone] = useState('0812-3456-7890');
   const [email, setEmail] = useState('bambang.sutrisno@posagen.ecotrust.id');
-  const [nik, setNik] = useState('3273241005820003');
+  const [nik] = useState('3273241005820003');
 
   // Operational Pos states
   const [posName, setPosName] = useState('Pos Kelurahan Sukamaju');
   const [posAddress, setPosAddress] = useState('Jl. Pemuda No. 45, RT 02 / RW 04, Kelurahan Sukamaju');
-  const [district, setDistrict] = useState('Kecamatan Coblong');
+  const [district] = useState('Kecamatan Coblong');
   const [operatingHours, setOperatingHours] = useState('08.00 - 17.00 WIB');
   const [operatingDays, setOperatingDays] = useState('Senin - Sabtu');
-  const [scaleType, setScaleType] = useState('Timbangan Digital Kalibrasi (Maks. 150 kg)');
+  const [scaleType] = useState('Timbangan Digital Kalibrasi (Maks. 150 kg)');
 
   // Membership & Account status
-  const [membershipGrade, setMembershipGrade] = useState('Pos Mitra Utama Grade A');
-  const [joinDate, setJoinDate] = useState('15 Januari 2024');
-  const [totalProcessedWeight, setTotalProcessedWeight] = useState('1.420 kg');
+  const [membershipGrade] = useState('Pos Mitra Utama Grade A');
+  const [joinDate] = useState('15 Januari 2024');
+  const [totalProcessedWeight] = useState('1.420 kg');
 
   // Preferences & Alerts
   const [smsReceiptAlert, setSmsReceiptAlert] = useState(true);

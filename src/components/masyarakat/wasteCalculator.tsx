@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calculator, Sparkles, Eye, Lightbulb, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { Calculator, Eye, Lightbulb, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import { WasteDetailModal } from './wasteDetailModal';
 import type { WasteItemDetail } from './wasteDetailModal';
 

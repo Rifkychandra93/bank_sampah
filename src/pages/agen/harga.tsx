@@ -4,9 +4,6 @@ import { ThemeToggle } from '../../context/ThemeContext';
 import {
   Tag,
   Search,
-  Filter,
-  TrendingUp,
-  Info,
   Menu,
   ChevronLeft,
   ChevronRight,

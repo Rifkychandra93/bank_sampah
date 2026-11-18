@@ -10,10 +10,7 @@ import {
   Printer,
   Copy,
   Check,
-  X,
-  MapPin,
-  Clock,
-  ArrowRight
+  X
 } from 'lucide-react';
 
 export interface SetoranTransaction {

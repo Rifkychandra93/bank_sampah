@@ -1,27 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Sidebar } from '../../components/masyarakat/sidebar';
+import { Header } from '../../components/masyarakat/header';
 import { UserQrModal } from '../../components/masyarakat/userQrModal';
 import { WasteCalculator } from '../../components/masyarakat/wasteCalculator';
 import {
-  Leaf,
+  Wallet,
   ShoppingBag,
   Receipt,
   Calendar,
   MapPin,
   Clock,
-  QrCode,
-  ArrowDown,
-  ChevronRight,
-  ChevronDown,
-  Menu,
-  X,
   ArrowRight,
-  User,
-  LogOut,
-  Wallet,
-  ArrowUpRight,
-  CheckCircle2
+  CheckCircle2,
+  Navigation
 } from 'lucide-react';
 import posSukamajuImg from '../../assets/pos-sukamaju.jpg';
 
@@ -31,11 +23,11 @@ export default function HomeMasyarakat() {
   const [balance, setBalance] = useState<number>(125000);
   const [isQrModalOpen, setIsQrModalOpen] = useState<boolean>(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'harga' | 'riwayat' | 'lokasi'>('dashboard');
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState<boolean>(false);
-  const [isAllLocationsOpen, setIsAllLocationsOpen] = useState<boolean>(false);
-  const [isAllActivitiesOpen, setIsAllActivitiesOpen] = useState<boolean>(false);
-  const [isWalletDetailOpen, setIsWalletDetailOpen] = useState<boolean>(false);
+
+  // Dynamic metrics from history
+  const [totalWeight, setTotalWeight] = useState<number>(18.5);
+  const [totalTransactions, setTotalTransactions] = useState<number>(6);
+  const [lastTransactionDate, setLastTransactionDate] = useState<string>('12 Nov 2026');
 
   useEffect(() => {
     const savedName = localStorage.getItem('ecoBank_userName');
@@ -49,6 +41,38 @@ export default function HomeMasyarakat() {
       localStorage.setItem('ecoBank_userBalance', '125000');
       setBalance(125000);
     }
+
+    // Read history to compute dynamic summary cards
+    const rawHistory = localStorage.getItem('ecoBank_history');
+    if (rawHistory) {
+      try {
+        const parsed = JSON.parse(rawHistory);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const userRecords = parsed.filter(
+            (r: any) => !r.userId || r.userId === 'USER-123456' || r.userName?.includes('Rifky')
+          );
+          const activeList = userRecords.length > 0 ? userRecords : parsed;
+
+          const sumWeight = activeList.reduce((acc: number, item: any) => acc + (Number(item.weight) || 0), 0);
+          setTotalWeight(Number(sumWeight.toFixed(1)));
+          setTotalTransactions(activeList.length);
+
+          if (activeList[0]?.date) {
+            const dateObj = new Date(activeList[0].date);
+            if (!isNaN(dateObj.getTime())) {
+              const formattedDate = dateObj.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              });
+              setLastTransactionDate(formattedDate);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to parse history:', err);
+      }
+    }
   }, []);
 
   const formatRupiah = (val: number) => {
@@ -59,309 +83,183 @@ export default function HomeMasyarakat() {
     }).format(val);
   };
 
-  // Extract first name for greeting e.g. "Rifky"
-  const firstName = userName.split(' ')[0] || 'Rifky';
-
-  // Extract initials for avatar e.g. "RC"
-  const initials = userName
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-
-  const handleTabChange = (tab: 'dashboard' | 'harga' | 'riwayat' | 'lokasi') => {
-    setActiveTab(tab);
-    if (tab === 'harga') {
-      const el = document.getElementById('katalog-harga');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else if (tab === 'lokasi') {
-      setIsAllLocationsOpen(true);
-    } else if (tab === 'riwayat') {
-      setIsAllActivitiesOpen(true);
-    } else if (tab === 'dashboard') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const nearbyLocations = [
-    {
-      name: 'Pos Kelurahan Sukamaju',
-      hours: '08.00 - 17.00 WIB',
-      distance: '350 m',
-      status: 'Buka',
-      address: 'Jl. Pemuda No. 45, Sukamaju'
-    },
-    {
-      name: 'Pos Melati RW 05',
-      hours: '08.00 - 17.00 WIB',
-      distance: '350 m',
-      status: 'Buka',
-      address: 'Balai Warga RW 05, Kel. Sukajadi'
-    },
-    {
-      name: 'Pos Cempaka RW 02',
-      hours: '09.00 - 16.30 WIB',
-      distance: '850 m',
-      status: 'Tutup 16.30',
-      address: 'Jl. Cempaka Putih No. 12'
-    }
-  ];
-
+  // Recent verified transactions
   const recentActivities = [
     {
       id: 1,
-      title: 'Penjemputan sampah',
+      title: 'Setoran Botol Plastik PET',
       date: '12 Nov 2026 • 10.24 WIB',
-      status: 'Diproses',
-      badgeClass: 'bg-[#EAF7EE] text-[#16a34a]'
+      pos: 'Pos Kelurahan Sukamaju',
+      status: 'Selesai',
+      badgeClass: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800'
     },
     {
       id: 2,
-      title: 'Setoran di Pos',
+      title: 'Setoran Kardus & Kertas Arsip',
       date: '8 Nov 2026 • 15.30 WIB',
+      pos: 'Pos Melati RW 05',
       status: 'Selesai',
-      badgeClass: 'bg-[#EAF7EE] text-[#16a34a]'
+      badgeClass: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800'
     },
     {
       id: 3,
-      title: 'Setoran Plastik & Kardus',
+      title: 'Setoran Kaleng Minuman Alumunium',
       date: '3 Nov 2026 • 09.15 WIB',
+      pos: 'Pos Cempaka RW 02',
       status: 'Selesai',
-      badgeClass: 'bg-[#EAF7EE] text-[#16a34a]'
+      badgeClass: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800'
     },
     {
       id: 4,
-      title: 'Tarik Saldo ke DANA',
+      title: 'Tarik Saldo ke E-Wallet DANA',
       date: '28 Okt 2026 • 14.20 WIB',
-      status: 'Selesai',
-      badgeClass: 'bg-slate-100 text-slate-700'
+      pos: 'Transfer Saldo DANA',
+      status: 'Berhasil',
+      badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-[#F6FAF7] text-slate-900 font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
-      {/* Soft Ambient Radial Mint Glow at Top-Right (as seen in reference) */}
-      <div className="fixed top-0 right-0 w-[500px] h-[400px] bg-gradient-to-bl from-emerald-100/50 via-emerald-50/25 to-transparent blur-3xl pointer-events-none -z-0" />
-
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden transition-colors">
       {/* Sidebar Navigation */}
       <Sidebar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
+        activeTab="dashboard"
         isOpenMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
       {/* Main Content Layout with Left Offset for Fixed Sidebar */}
-      <div className="lg:pl-60 flex flex-col min-h-screen">
-        {/* Mobile Header Bar */}
-        <header className="lg:hidden sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsMobileSidebarOpen(true)}
-              className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
-              aria-label="Buka Menu"
-            >
-              <Menu size={22} />
-            </button>
-            <span className="font-black text-slate-900 tracking-tight text-lg">EcoTrust</span>
-          </div>
-
-          <Link
-            to="/masyarakat/profile"
-            className="flex items-center gap-2 p-1.5 rounded-full hover:bg-slate-50 transition-colors"
-          >
-            <div className="w-8 h-8 rounded-xl bg-[#D7F3E1] text-[#16a34a] font-black text-xs flex items-center justify-center">
-              {initials}
-            </div>
-            <span className="text-xs font-bold text-slate-800">{firstName}</span>
-          </Link>
-        </header>
-
-        {/* Desktop Top Header Bar (User Pill at Top Right) */}
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 pt-6 pb-2 hidden lg:flex justify-end relative z-20">
-          <div className="relative">
-            <button
-              onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-              className="flex items-center gap-2.5 bg-white/80 hover:bg-white backdrop-blur-sm py-1.5 px-3 rounded-full border border-slate-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] transition-all cursor-pointer"
-            >
-              <div className="w-8 h-8 rounded-xl bg-[#D7F3E1] text-[#16a34a] font-black text-xs flex items-center justify-center">
-                {initials}
-              </div>
-              <span className="text-sm font-bold text-slate-800">{userName}</span>
-              <ChevronDown
-                size={15}
-                className={`text-slate-400 transition-transform ${isUserDropdownOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
-
-            {/* Dropdown Menu */}
-            {isUserDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-4 py-2 border-b border-slate-100">
-                  <p className="text-xs font-bold text-slate-900 truncate">{userName}</p>
-                  <p className="text-[11px] text-emerald-600 font-medium">Nasabah Aktif</p>
-                </div>
-                <Link
-                  to="/masyarakat/profile"
-                  onClick={() => setIsUserDropdownOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-                >
-                  <User size={15} />
-                  <span>Pengaturan Profil</span>
-                </Link>
-                <Link
-                  to="/login"
-                  onClick={() => setIsUserDropdownOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
-                >
-                  <LogOut size={15} />
-                  <span>Keluar</span>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="lg:pl-64 flex flex-col min-h-screen">
+        {/* Header Bar with Strategic Buka QR Button, Notifications Bell, and User Profile */}
+        <Header
+          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
+          onOpenQr={() => setIsQrModalOpen(true)}
+          title="Dashboard"
+          subtitle="Pantau saldo, harga sampah, dan riwayat setoran Anda."
+        />
 
         {/* Dashboard Main Content Body */}
-        <main className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-4 sm:py-6 space-y-6 flex-1 relative z-10">
-          {/* Greeting Header */}
-          <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Selamat datang, {firstName}!
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-normal">
-              Yuk mulai langkah kecil untuk lingkungan yang lebih bersih.
-            </p>
+        <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 flex-1">
+          {/* Header Title (Clean, no decorative emojis) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                Dashboard Nasabah
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                Ringkasan saldo, akumulasi sampah terpilah, dan pos agen mitra terdekat.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                Nasabah: <strong className="text-slate-900 dark:text-white">{userName}</strong>
+              </span>
+            </div>
           </div>
 
-          {/* Large Saldo Card (Saldo Tersedia) */}
-          <div className="bg-white rounded-[26px] p-6 sm:p-7 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex items-center justify-between hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4 sm:gap-5">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#EAF7EE] flex items-center justify-center shrink-0">
-                <Leaf size={28} className="fill-[#16a34a] text-[#16a34a]" />
-              </div>
-              <div>
-                <span className="text-xs sm:text-sm font-medium text-slate-400 block mb-0.5">
-                  Saldo Tersedia
-                </span>
-                <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  {formatRupiah(balance)}
-                </p>
+          {/* 4 Summary Cards in One Horizontal Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Card 1: Saldo Tersedia */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/60 transition-all">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
+                  <Wallet size={22} className="stroke-[2.2]" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-xs font-medium text-slate-400 dark:text-slate-500 block truncate">
+                    Saldo Tersedia
+                  </span>
+                  <p className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 truncate">
+                    {formatRupiah(balance)}
+                  </p>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold block mt-0.5">
+                    Siap ditarik kapan pun
+                  </span>
+                </div>
               </div>
             </div>
 
-            <button
-              onClick={() => setIsWalletDetailOpen(true)}
-              className="w-10 h-10 rounded-full bg-[#EAF7EE] text-[#16a34a] hover:bg-emerald-100 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
-              aria-label="Lihat Rincian Saldo"
-              title="Lihat Rincian Saldo"
-            >
-              <ChevronRight size={20} className="stroke-[2.5]" />
-            </button>
-          </div>
-
-          {/* Three Summary Stat Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-            {/* Card 1: Total Sampah Terjual */}
-            <div className="bg-white rounded-[26px] p-5 sm:p-6 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex items-center justify-between hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3.5 sm:gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#EAF7EE] flex items-center justify-center shrink-0">
-                  <ShoppingBag size={22} className="fill-[#16a34a] text-[#16a34a]" />
+            {/* Card 2: Total Sampah Terjual */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/60 transition-all">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
+                  <ShoppingBag size={22} className="stroke-[2.2]" />
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-slate-400 block">
+                <div className="min-w-0">
+                  <span className="text-xs font-medium text-slate-400 dark:text-slate-500 block truncate">
                     Total Sampah Terjual
                   </span>
-                  <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-0.5">
-                    18,5 kg
+                  <p className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 truncate">
+                    {totalWeight} kg
                   </p>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold block mt-0.5">
+                    Telah didaur ulang
+                  </span>
                 </div>
               </div>
-
-              <button
-                onClick={() => handleTabChange('harga')}
-                className="w-8 h-8 rounded-full bg-[#EAF7EE] text-[#16a34a] hover:bg-emerald-100 flex items-center justify-center transition-all cursor-pointer hover:scale-105"
-                title="Kalkulator Sampah"
-              >
-                <ChevronRight size={17} className="stroke-[2.5]" />
-              </button>
             </div>
 
-            {/* Card 2: Total Transaksi */}
-            <div className="bg-white rounded-[26px] p-5 sm:p-6 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex items-center justify-between hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3.5 sm:gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#EAF7EE] flex items-center justify-center shrink-0">
-                  <Receipt size={22} className="text-[#16a34a] stroke-[2.2]" />
+            {/* Card 3: Total Transaksi */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/60 transition-all">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
+                  <Receipt size={22} className="stroke-[2.2]" />
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-slate-400 block">
+                <div className="min-w-0">
+                  <span className="text-xs font-medium text-slate-400 dark:text-slate-500 block truncate">
                     Total Transaksi
                   </span>
-                  <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-0.5">
-                    6 kali
+                  <p className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 truncate">
+                    {totalTransactions} kali
                   </p>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold block mt-0.5">
+                    Setoran terverifikasi
+                  </span>
                 </div>
               </div>
-
-              <button
-                onClick={() => setIsAllActivitiesOpen(true)}
-                className="w-8 h-8 rounded-full bg-[#EAF7EE] text-[#16a34a] hover:bg-emerald-100 flex items-center justify-center transition-all cursor-pointer hover:scale-105"
-                title="Riwayat Transaksi"
-              >
-                <ChevronRight size={17} className="stroke-[2.5]" />
-              </button>
             </div>
 
-            {/* Card 3: Transaksi Terakhir */}
-            <div className="bg-white rounded-[26px] p-5 sm:p-6 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex items-center justify-between hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3.5 sm:gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#EAF7EE] flex items-center justify-center shrink-0">
-                  <Calendar size={22} className="text-[#16a34a] stroke-[2.2]" />
+            {/* Card 4: Transaksi Terakhir */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/60 transition-all">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
+                  <Calendar size={22} className="stroke-[2.2]" />
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-slate-400 block">
+                <div className="min-w-0">
+                  <span className="text-xs font-medium text-slate-400 dark:text-slate-500 block truncate">
                     Transaksi Terakhir
                   </span>
-                  <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-0.5">
-                    12 Nov 2026
+                  <p className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 truncate">
+                    {lastTransactionDate}
                   </p>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold block mt-0.5 truncate">
+                    Pos Kelurahan Sukamaju
+                  </span>
                 </div>
               </div>
-
-              <button
-                onClick={() => setIsAllActivitiesOpen(true)}
-                className="w-8 h-8 rounded-full bg-[#EAF7EE] text-[#16a34a] hover:bg-emerald-100 flex items-center justify-center transition-all cursor-pointer hover:scale-105"
-                title="Detail Transaksi Terakhir"
-              >
-                <ChevronRight size={17} className="stroke-[2.5]" />
-              </button>
             </div>
           </div>
 
-          {/* Bottom Two Cards: Pos Setor Terdekat & Aktivitas Terbaru */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+          {/* Pos Setor Terdekat & Aktivitas Terbaru */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Card Left: Pos Setor Terdekat */}
-            <div
-              id="pos-setor"
-              className="bg-white rounded-[26px] p-6 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex flex-col justify-between"
-            >
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
               <div>
                 {/* Header */}
-                <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <MapPin size={20} className="fill-[#16a34a] text-[#16a34a]" />
-                    <h2 className="text-base font-bold text-slate-900">Pos Setor Terdekat</h2>
+                    <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                      <MapPin size={17} className="fill-emerald-600 dark:fill-emerald-400" />
+                    </div>
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white">Pos Setor Terdekat</h2>
                   </div>
-                  <button
-                    onClick={() => setIsAllLocationsOpen(true)}
-                    className="text-xs sm:text-sm font-semibold text-[#16a34a] hover:text-emerald-700 flex items-center gap-1 transition-colors cursor-pointer"
+                  <Link
+                    to="/masyarakat/lokasi"
+                    className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <span>Lihat Semua</span>
-                    <ArrowRight size={15} />
-                  </button>
+                    <ArrowRight size={14} />
+                  </Link>
                 </div>
 
                 {/* Pos Detail Row */}
@@ -369,19 +267,22 @@ export default function HomeMasyarakat() {
                   <img
                     src={posSukamajuImg}
                     alt="Pos Kelurahan Sukamaju"
-                    className="w-28 sm:w-32 h-20 sm:h-22 rounded-2xl object-cover shrink-0 shadow-xs border border-slate-100"
+                    className="w-24 sm:w-28 h-20 rounded-xl object-cover shrink-0 shadow-xs border border-slate-200 dark:border-slate-700"
                   />
-                  <div className="space-y-1.5">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug truncate">
                       Pos Kelurahan Sukamaju
                     </h3>
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                      <Clock size={14} className="text-slate-400" />
-                      <span>08.00 - 17.00 WIB</span>
-                    </div>
-                    <div className="pt-0.5">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#EAF7EE] text-[#16a34a] font-bold text-xs">
-                        <MapPin size={11} className="fill-[#16a34a] text-[#16a34a]" />
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                      Jl. Pemuda No. 45, Kel. Sukamaju
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                      <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
+                        <Clock size={12} />
+                        <span>08.00 - 17.00 WIB</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+                        <MapPin size={10} className="fill-emerald-600" />
                         <span>350 m</span>
                       </span>
                     </div>
@@ -389,87 +290,75 @@ export default function HomeMasyarakat() {
                 </div>
               </div>
 
-              {/* Action Button: Tunjukkan QR ke Petugas */}
-              <div className="pt-6">
-                <button
-                  onClick={() => setIsQrModalOpen(true)}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-[#EAF7EE] hover:bg-emerald-100 text-[#16a34a] border border-emerald-200/60 font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all shadow-xs active:scale-[0.99] cursor-pointer"
+              {/* Action Button: Rute ke Pos Agen */}
+              <div className="pt-5 mt-4 border-t border-slate-100 dark:border-slate-800">
+                <Link
+                  to="/masyarakat/lokasi"
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
-                  <QrCode size={18} className="text-[#16a34a]" />
-                  <span>Tunjukkan QR ke Petugas</span>
-                  <ArrowDown size={16} className="text-[#16a34a]" />
-                </button>
+                  <Navigation size={14} className="text-emerald-600 dark:text-emerald-400" />
+                  <span>Lihat Rute & Jadwal Pos Agen</span>
+                </Link>
               </div>
             </div>
 
             {/* Card Right: Aktivitas Terbaru */}
-            <div
-              id="aktivitas"
-              className="bg-white rounded-[26px] p-6 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex flex-col justify-between"
-            >
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
               <div>
                 {/* Header */}
-                <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Clock size={20} className="text-[#16a34a] stroke-[2.2]" />
-                    <h2 className="text-base font-bold text-slate-900">Aktivitas Terbaru</h2>
+                    <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                      <Clock size={17} className="stroke-[2.2]" />
+                    </div>
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white">Aktivitas Terbaru</h2>
                   </div>
-                  <button
-                    onClick={() => setIsAllActivitiesOpen(true)}
-                    className="text-xs sm:text-sm font-semibold text-[#16a34a] hover:text-emerald-700 flex items-center gap-1 transition-colors cursor-pointer"
+                  <Link
+                    to="/masyarakat/riwayat"
+                    className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <span>Lihat Semua</span>
-                    <ArrowRight size={15} />
-                  </button>
+                    <ArrowRight size={14} />
+                  </Link>
                 </div>
 
-                {/* Timeline List */}
-                <div className="relative pl-5 space-y-6">
-                  {/* Vertical Timeline Connecting Line */}
-                  <div className="absolute left-[5px] top-2 bottom-5 w-0.5 bg-[#16a34a]/30" />
+                {/* Timeline List of Activities */}
+                <div className="relative pl-5 space-y-3.5">
+                  <div className="absolute left-[5px] top-2 bottom-4 w-0.5 bg-emerald-500/30" />
 
-                  {/* Activity Item 1 */}
-                  <div className="relative flex items-center justify-between">
-                    {/* Dot */}
-                    <div className="absolute -left-[20px] top-1.5 w-3 h-3 rounded-full bg-[#16a34a] ring-4 ring-white" />
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">Penjemputan sampah</h4>
-                      <p className="text-xs text-slate-400 mt-0.5">12 Nov 2026 • 10.24 WIB</p>
+                  {recentActivities.map((act) => (
+                    <div key={act.id} className="relative flex items-center justify-between gap-3">
+                      <div className="absolute -left-[20px] top-1.5 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-slate-900" />
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                          {act.title}
+                        </h4>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                          {act.pos} • {act.date}
+                        </p>
+                      </div>
+                      <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ${act.badgeClass}`}>
+                        {act.status}
+                      </span>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-[#EAF7EE] text-[#16a34a] font-bold text-xs">
-                      Diproses
-                    </span>
-                  </div>
-
-                  {/* Activity Item 2 */}
-                  <div className="relative flex items-center justify-between">
-                    {/* Dot */}
-                    <div className="absolute -left-[20px] top-1.5 w-3 h-3 rounded-full bg-[#16a34a] ring-4 ring-white" />
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">Setoran di Pos</h4>
-                      <p className="text-xs text-slate-400 mt-0.5">8 Nov 2026 • 15.30 WIB</p>
-                    </div>
-                    <span className="px-3 py-1 rounded-full bg-[#EAF7EE] text-[#16a34a] font-bold text-xs">
-                      Selesai
-                    </span>
-                  </div>
+                  ))}
                 </div>
               </div>
 
               {/* Bottom Info Note */}
-              <div className="pt-6 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                <span>Diperbarui otomatis secara real-time</span>
-                <span className="text-[#16a34a] font-semibold flex items-center gap-1">
-                  <CheckCircle2 size={13} /> Sinkron
+              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+                <span>Diperbarui otomatis saat sampah ditimbang</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <CheckCircle2 size={13} /> Terverifikasi
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Preserved Waste Calculator & Price Section */}
+          {/* Katalog Harga Sampah & Kalkulator Estimasi (with Pagination) */}
           <section
             id="katalog-harga"
-            className="bg-white rounded-[26px] p-6 sm:p-8 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]"
+            className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-7 border border-slate-200/80 dark:border-slate-800 shadow-xs"
           >
             <WasteCalculator />
           </section>
@@ -483,156 +372,6 @@ export default function HomeMasyarakat() {
         userId={userId}
         userName={userName}
       />
-
-      {/* Modal: All Nearby Drop Points */}
-      {isAllLocationsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsAllLocationsOpen(false)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[#EAF7EE] text-[#16a34a] flex items-center justify-center">
-                <MapPin size={22} className="fill-[#16a34a]" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Daftar Pos Setor Terdekat</h3>
-                <p className="text-xs text-slate-500">Kunjungi pos mitra bank sampah di sekitar Anda</p>
-              </div>
-            </div>
-
-            <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-              {nearbyLocations.map((loc, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between"
-                >
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-slate-900">{loc.name}</h4>
-                    <p className="text-xs text-slate-500">{loc.address}</p>
-                    <p className="text-[11px] text-slate-400 flex items-center gap-1">
-                      <Clock size={12} /> {loc.hours}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-bold text-[#16a34a] block">{loc.distance}</span>
-                    <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#EAF7EE] text-[#16a34a]">
-                      {loc.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-slate-100 flex justify-end">
-              <button
-                onClick={() => setIsAllLocationsOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition cursor-pointer"
-              >
-                Tutup
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: All Activities History */}
-      {isAllActivitiesOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsAllActivitiesOpen(false)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[#EAF7EE] text-[#16a34a] flex items-center justify-center">
-                <Clock size={22} className="stroke-[2.5]" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Riwayat Seluruh Aktivitas</h3>
-                <p className="text-xs text-slate-500">Catatan transaksi setoran dan pencairan saldo</p>
-              </div>
-            </div>
-
-            <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-              {recentActivities.map((act) => (
-                <div
-                  key={act.id}
-                  className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between"
-                >
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900">{act.title}</h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{act.date}</p>
-                  </div>
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${act.badgeClass}`}>
-                    {act.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-slate-100 flex justify-end">
-              <button
-                onClick={() => setIsAllActivitiesOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition cursor-pointer"
-              >
-                Tutup
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Quick Wallet Detail */}
-      {isWalletDetailOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="relative w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl border border-slate-100 text-center animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsWalletDetailOpen(false)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="w-14 h-14 rounded-2xl bg-[#EAF7EE] text-[#16a34a] flex items-center justify-center mx-auto mb-3">
-              <Wallet size={28} />
-            </div>
-
-            <h3 className="text-lg font-bold text-slate-900">Rincian Saldo Nasabah</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Saldo terdaftar di akun {userName}</p>
-
-            <div className="mt-4 p-4 rounded-2xl bg-[#F6FAF7] border border-emerald-100/60">
-              <span className="text-xs text-slate-500 font-medium block">Total Tersedia</span>
-              <span className="text-2xl font-black text-slate-900 tracking-tight mt-1 block">
-                {formatRupiah(balance)}
-              </span>
-            </div>
-
-            <div className="mt-5 flex gap-2.5">
-              <button
-                onClick={() => setIsWalletDetailOpen(false)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition cursor-pointer"
-              >
-                Tutup
-              </button>
-              <Link
-                to="/masyarakat/profile"
-                className="flex-1 py-2.5 rounded-xl bg-[#16a34a] text-white font-bold text-xs hover:bg-emerald-700 transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20"
-              >
-                <span>Tarik Dana</span>
-                <ArrowUpRight size={14} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

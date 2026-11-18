@@ -32,17 +32,17 @@ export function FaqSection() {
   };
 
   return (
-    <section id="faq" className="py-24 bg-slate-50 border-t border-slate-200/60 relative">
+    <section id="faq" className="py-24 bg-slate-50 dark:bg-slate-950 border-t border-slate-200/60 dark:border-slate-800 relative transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider mb-4 border border-emerald-200 dark:border-emerald-800">
             <HelpCircle size={14} />
             <span>Pusat Informasi</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
             Pertanyaan yang Sering Diajukan
           </h2>
-          <p className="text-slate-600 text-base max-w-xl mx-auto">
+          <p className="text-slate-600 dark:text-slate-400 text-base max-w-xl mx-auto">
             Semua yang perlu kamu ketahui tentang cara kerja, penimbangan, hingga pencairan saldo EcoTrust.
           </p>
         </div>
@@ -53,23 +53,23 @@ export function FaqSection() {
             return (
               <div
                 key={idx}
-                className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm transition-all duration-200"
+                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs transition-all duration-200"
               >
                 <button
                   onClick={() => toggle(idx)}
-                  className="w-full py-5 px-6 text-left flex items-center justify-between gap-4 font-bold text-slate-900 hover:text-emerald-700 transition-colors"
+                  className="w-full py-5 px-6 text-left flex items-center justify-between gap-4 font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
                 >
                   <span className="text-base sm:text-lg">{faq.q}</span>
                   <div
-                    className={`w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 bg-emerald-100 text-emerald-700' : 'text-slate-500'
+                    className={`w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400'
                     }`}
                   >
                     <ChevronDown size={18} />
                   </div>
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-1 text-slate-600 text-sm leading-relaxed border-t border-slate-100">
+                  <div className="px-6 pb-6 pt-1 text-slate-600 dark:text-slate-400 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800">
                     {faq.a}
                   </div>
                 )}
@@ -81,4 +81,3 @@ export function FaqSection() {
     </section>
   );
 }
-

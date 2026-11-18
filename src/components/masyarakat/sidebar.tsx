@@ -1,23 +1,33 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Tag, History, MapPin, User, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, MapPin, History, X, Sparkles, ShieldCheck } from 'lucide-react';
 import { Logo } from '../common/Logo';
 
 interface SidebarProps {
-  activeTab?: 'dashboard' | 'harga' | 'riwayat' | 'lokasi';
-  onTabChange?: (tab: 'dashboard' | 'harga' | 'riwayat' | 'lokasi') => void;
+  activeTab?: 'dashboard' | 'riwayat' | 'lokasi';
+  onTabChange?: (tab: 'dashboard' | 'riwayat' | 'lokasi') => void;
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
 }
 
 export function Sidebar({
-  activeTab = 'dashboard',
+  activeTab,
   onTabChange,
   isOpenMobile = false,
   onCloseMobile
 }: SidebarProps) {
   const location = useLocation();
 
-  const handleNavClick = (tab: 'dashboard' | 'harga' | 'riwayat' | 'lokasi') => {
+  const isCurrent = (path: string, tabName: 'dashboard' | 'riwayat' | 'lokasi') => {
+    if (activeTab) {
+      return activeTab === tabName;
+    }
+    if (path === '/masyarakat') {
+      return location.pathname === '/masyarakat' || location.pathname === '/masyarakat/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  const handleNavClick = (tab: 'dashboard' | 'riwayat' | 'lokasi') => {
     if (onTabChange) {
       onTabChange(tab);
     }
@@ -32,26 +42,26 @@ export function Sidebar({
       {isOpenMobile && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-40 lg:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 lg:hidden animate-in fade-in duration-200"
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-60 bg-white border-r border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] lg:shadow-none flex flex-col justify-between transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 shadow-xl lg:shadow-none flex flex-col justify-between transition-transform duration-300 lg:translate-x-0 ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         <div>
           {/* Logo Area */}
-          <div className="p-6 pb-8 flex items-center justify-between">
-            <Link to="/masyarakat" className="inline-flex items-center">
-              <Logo className="h-8 w-auto object-contain" />
+          <div className="p-5 pb-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+            <Link to="/masyarakat" className="inline-flex items-center group">
+              <Logo imgClassName="h-7 w-auto" />
             </Link>
             {onCloseMobile && (
               <button
                 onClick={onCloseMobile}
-                className="lg:hidden p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                className="lg:hidden p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 aria-label="Tutup Menu"
               >
                 <X size={18} />
@@ -59,107 +69,103 @@ export function Sidebar({
             )}
           </div>
 
-          {/* Nav Items */}
-          <nav className="px-3.5 space-y-1.5">
-            {/* Dashboard */}
+          {/* Navigation Links */}
+          <nav className="p-4 space-y-1.5">
+            {/* 1. Dashboard */}
             <div className="relative">
-              {activeTab === 'dashboard' && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#16a34a] rounded-r-md" />
+              {isCurrent('/masyarakat', 'dashboard') && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-emerald-600 dark:bg-emerald-500 rounded-r-md" />
               )}
-              <button
-                type="button"
+              <Link
+                to="/masyarakat"
                 onClick={() => handleNavClick('dashboard')}
                 className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
-                  activeTab === 'dashboard'
-                    ? 'bg-[#EAF7EE] text-[#16a34a]'
-                    : 'text-slate-600 hover:text-[#16a34a] hover:bg-emerald-50/50'
+                  isCurrent('/masyarakat', 'dashboard')
+                    ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50/40 dark:hover:bg-slate-800/60'
                 }`}
               >
-                <Home size={19} className={activeTab === 'dashboard' ? 'text-[#16a34a]' : 'text-slate-500'} />
+                <LayoutDashboard
+                  size={19}
+                  className={
+                    isCurrent('/masyarakat', 'dashboard')
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-slate-400 dark:text-slate-500'
+                  }
+                />
                 <span>Dashboard</span>
-              </button>
+              </Link>
             </div>
 
-            {/* Harga */}
+            {/* 2. Lokasi Setor */}
             <div className="relative">
-              {activeTab === 'harga' && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#16a34a] rounded-r-md" />
+              {isCurrent('/masyarakat/lokasi', 'lokasi') && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-emerald-600 dark:bg-emerald-500 rounded-r-md" />
               )}
-              <button
-                type="button"
-                onClick={() => handleNavClick('harga')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
-                  activeTab === 'harga'
-                    ? 'bg-[#EAF7EE] text-[#16a34a]'
-                    : 'text-slate-600 hover:text-[#16a34a] hover:bg-emerald-50/50'
-                }`}
-              >
-                <Tag size={19} className={activeTab === 'harga' ? 'text-[#16a34a]' : 'text-slate-500'} />
-                <span>Harga</span>
-              </button>
-            </div>
-
-            {/* Riwayat */}
-            <div className="relative">
-              {activeTab === 'riwayat' && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#16a34a] rounded-r-md" />
-              )}
-              <button
-                type="button"
-                onClick={() => handleNavClick('riwayat')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
-                  activeTab === 'riwayat'
-                    ? 'bg-[#EAF7EE] text-[#16a34a]'
-                    : 'text-slate-600 hover:text-[#16a34a] hover:bg-emerald-50/50'
-                }`}
-              >
-                <History size={19} className={activeTab === 'riwayat' ? 'text-[#16a34a]' : 'text-slate-500'} />
-                <span>Riwayat</span>
-              </button>
-            </div>
-
-            {/* Lokasi Setor */}
-            <div className="relative">
-              {activeTab === 'lokasi' && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#16a34a] rounded-r-md" />
-              )}
-              <button
-                type="button"
+              <Link
+                to="/masyarakat/lokasi"
                 onClick={() => handleNavClick('lokasi')}
                 className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
-                  activeTab === 'lokasi'
-                    ? 'bg-[#EAF7EE] text-[#16a34a]'
-                    : 'text-slate-600 hover:text-[#16a34a] hover:bg-emerald-50/50'
+                  isCurrent('/masyarakat/lokasi', 'lokasi')
+                    ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50/40 dark:hover:bg-slate-800/60'
                 }`}
               >
-                <MapPin size={19} className={activeTab === 'lokasi' ? 'text-[#16a34a]' : 'text-slate-500'} />
+                <MapPin
+                  size={19}
+                  className={
+                    isCurrent('/masyarakat/lokasi', 'lokasi')
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-slate-400 dark:text-slate-500'
+                  }
+                />
                 <span>Lokasi Setor</span>
-              </button>
+              </Link>
+            </div>
+
+            {/* 3. Riwayat Setoran */}
+            <div className="relative">
+              {isCurrent('/masyarakat/riwayat', 'riwayat') && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-emerald-600 dark:bg-emerald-500 rounded-r-md" />
+              )}
+              <Link
+                to="/masyarakat/riwayat"
+                onClick={() => handleNavClick('riwayat')}
+                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
+                  isCurrent('/masyarakat/riwayat', 'riwayat')
+                    ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50/40 dark:hover:bg-slate-800/60'
+                }`}
+              >
+                <History
+                  size={19}
+                  className={
+                    isCurrent('/masyarakat/riwayat', 'riwayat')
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-slate-400 dark:text-slate-500'
+                  }
+                />
+                <span>Riwayat Setoran</span>
+              </Link>
             </div>
           </nav>
         </div>
 
-        {/* Bottom Profile & Logout */}
-        <div className="p-4 border-t border-slate-100/80 space-y-1">
-          <Link
-            to="/masyarakat/profile"
-            className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-colors ${
-              location.pathname.startsWith('/masyarakat/profile')
-                ? 'bg-[#EAF7EE] text-[#16a34a]'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            <User size={19} className="text-slate-500" />
-            <span>Profil</span>
-          </Link>
-
-          <Link
-            to="/login"
-            className="flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-          >
-            <LogOut size={19} className="text-slate-500" />
-            <span>Keluar</span>
-          </Link>
+        {/* Bottom Info Card: Pos Terdaftar & Status (Clean, no duplicate Profile/Logout buttons) */}
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/60 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
+              <ShieldCheck size={14} />
+              <span>Mitra Aktif RW 05</span>
+            </div>
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+              Pos Kelurahan Sukamaju
+            </p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
+              <Sparkles size={11} className="text-amber-500" />
+              Layanan timbang setiap hari
+            </p>
+          </div>
         </div>
       </aside>
     </>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Leaf, LogOut, Bell, ShieldCheck, User, LayoutDashboard } from 'lucide-react';
+import { LogOut, Bell, ShieldCheck, User, LayoutDashboard, MapPin, History } from 'lucide-react';
+import { Logo } from '../common/Logo';
 
 interface NavbarProps {
   userName?: string;
@@ -19,6 +20,8 @@ export function Navbar({ userName: initialUserName = 'Rifky Chandra' }: NavbarPr
   }, [initialUserName]);
 
   const isHome = location.pathname === '/masyarakat' || location.pathname === '/masyarakat/';
+  const isLokasi = location.pathname.startsWith('/masyarakat/lokasi');
+  const isRiwayat = location.pathname.startsWith('/masyarakat/riwayat');
   const isProfile = location.pathname.startsWith('/masyarakat/profile');
 
   // Initials for avatar
@@ -33,7 +36,7 @@ export function Navbar({ userName: initialUserName = 'Rifky Chandra' }: NavbarPr
     <header className="bg-white border-b border-slate-200/80 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/masyarakat" className="flex items-center gap-2 group">
             <Logo className="h-7 sm:h-8 w-auto" />
             <div className="flex flex-col">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -57,6 +60,30 @@ export function Navbar({ userName: initialUserName = 'Rifky Chandra' }: NavbarPr
             </Link>
 
             <Link
+              to="/masyarakat/lokasi"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+                isLokasi
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <MapPin size={14} />
+              <span>Lokasi Setor</span>
+            </Link>
+
+            <Link
+              to="/masyarakat/riwayat"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+                isRiwayat
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <History size={14} />
+              <span>Riwayat Setoran</span>
+            </Link>
+
+            <Link
               to="/masyarakat/profile"
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                 isProfile
@@ -71,13 +98,15 @@ export function Navbar({ userName: initialUserName = 'Rifky Chandra' }: NavbarPr
         </div>
 
         <div className="flex items-center gap-2.5 sm:gap-4">
-          <button
+          <Link
+            to="/masyarakat"
             className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center transition-colors relative cursor-pointer"
             aria-label="Notifikasi"
+            title="Notifikasi"
           >
             <Bell size={16} />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500" />
-          </button>
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+          </Link>
 
           <div className="h-6 w-px bg-slate-200 hidden sm:block" />
 

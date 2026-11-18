@@ -224,7 +224,7 @@ export default function LokasiSetorMasyarakat() {
   const endRecord = Math.min(safeCurrentPage * itemsPerPage, filteredLocations.length);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-clip transition-colors">
       {/* Sidebar Navigation */}
       <Sidebar
         activeTab="lokasi"

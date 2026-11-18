@@ -93,7 +93,7 @@ export default function DashboardSuperadmin() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const normalized: RecentTx[] = parsed.slice(0, 5).map((item: any, idx: number) => ({
             id: item.id ? String(item.id) : `TRX-90${idx}`,
-            userName: item.userName || 'Nasabah EcoBank',
+            userName: item.userName || 'Nasabah EcoTrust',
             type: item.type || 'plastik',
             weight: Number(item.weight) || 0,
             reward: Number(item.reward) || 0,
@@ -191,7 +191,7 @@ export default function DashboardSuperadmin() {
       [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));
-    link.setAttribute('download', `ecobank-laporan-sampah-pusat-${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `ecotrust-laporan-sampah-pusat-${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

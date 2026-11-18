@@ -428,7 +428,7 @@ export default function ManageAgen() {
                     required
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="pos.mawar@ecobank.id"
+                    placeholder="pos.mawar@ecotrust.id"
                     className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-eco-green outline-none"
                   />
                 </div>

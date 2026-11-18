@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf} from 'lucide-react';
 import { LoginForm } from '../../components/auth/loginForm';
+import { Logo } from '../../components/common/Logo';
 
 export default function Login() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -26,10 +26,8 @@ export default function Login() {
           }`}
         >
           <div className="mb-6 flex flex-col items-center text-center">
-            <Link to="/">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center mb-4 shadow-sm">
-              <Leaf size={20} className="stroke-[2.2] text-emerald-400" />
-            </div>
+            <Link to="/" className="mb-4 inline-block hover:opacity-90 transition-opacity">
+              <Logo className="h-10 sm:h-11 w-auto" />
             </Link>
 
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">

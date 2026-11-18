@@ -34,14 +34,9 @@ export function Navbar({ userName: initialUserName = 'Rifky Chandra' }: NavbarPr
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-              <Leaf size={18} className="stroke-[2.5]" />
-            </div>
+            <Logo className="h-7 sm:h-8 w-auto" />
             <div className="flex flex-col">
-              <span className="text-base font-black tracking-tight text-slate-900 leading-none">
-                Eco<span className="text-emerald-600">Trust</span>
-              </span>
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
                 Portal Nasabah
               </span>
             </div>

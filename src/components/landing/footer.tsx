@@ -1,5 +1,5 @@
-import { Leaf} from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Logo } from '../common/Logo';
 
 export function Footer() {
 
@@ -8,13 +8,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white shadow-md shadow-emerald-600/30">
-                <Leaf size={22} className="stroke-[2.5]" />
-              </div>
-              <span className="text-2xl font-black tracking-tight text-white">
-                Eco<span className="text-emerald-400">Trust</span>
-              </span>
+            <div className="flex items-center">
+              <Logo className="h-9 sm:h-10 w-auto" />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
               Mewujudkan ekosistem lingkungan lestari melalui digitalisasi bank sampah terintegrasi. Menjadikan setiap pilahan sampah bernilai guna dan berdaya ekonomi.

@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ScanLine, History, LogOut, Leaf, UserCheck } from 'lucide-react';
+import { ScanLine, History, LogOut, UserCheck } from 'lucide-react';
+import { Logo } from '../common/Logo';
 
 export function Sidebar() {
   const location = useLocation();
@@ -10,9 +11,13 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 bg-white min-h-screen shadow-md flex flex-col border-r border-gray-100 shrink-0">
-      <div className="p-6 flex items-center gap-2 border-b border-gray-100 text-eco-green font-bold text-xl">
-        <Leaf size={24} className="stroke-[2.5]" />
-        <span>EcoBank Agen</span>
+      <div className="p-6 border-b border-gray-100 flex flex-col gap-1.5">
+        <Link to="/agen" className="inline-block">
+          <Logo className="h-7 w-auto object-contain object-left" />
+        </Link>
+        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 uppercase tracking-wider self-start">
+          Portal Agen
+        </span>
       </div>
 
       <div className="p-4 border-b border-gray-50">

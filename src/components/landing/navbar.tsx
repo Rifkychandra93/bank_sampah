@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Menu, X} from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { Logo } from '../common/Logo';
 
 export function LandingNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,15 +52,8 @@ export function LandingNavbar() {
         }`}
       >
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
-          <a href="#home" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform duration-300">
-              <Leaf size={20} className="stroke-[2.5]" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 leading-none">
-                Eco<span className="text-emerald-600">Trust</span>
-              </span>
-            </div>
+          <a href="#home" className="flex items-center group shrink-0">
+            <Logo className="h-8 sm:h-9 w-auto" />
           </a>
 
           <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 p-1.5 rounded-full border border-slate-200/60 shadow-inner">
